@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:quizzler/Question.dart';
+import 'package:quizzler/QuizzBrain.dart';
+
+QuizzBrain quizzBrain = QuizzBrain();
 
 void main() => runApp(Quizzler());
 
@@ -25,6 +29,32 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+
+  void checkAnswer(bool userPickedAnswer){
+    if(userPickedAnswer == quizzBrain.getAnswer()){
+      scoreKeeper.add(
+          Icon(
+            Icons.check,
+            color: Colors.green,
+          )
+      );
+    }else {
+      scoreKeeper.add(
+          Icon(
+            Icons.close,
+            color: Colors.red,
+          )
+      );
+    }
+  }
+
+  List<Icon> scoreKeeper = [
+    Icon(
+      Icons.check,
+      color: Colors.green,
+    )
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -37,7 +67,7 @@ class _QuizPageState extends State<QuizPage> {
             padding: EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                'This is where the question text will go.',
+                quizzBrain.getQuestionText(),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 25.0,
@@ -61,7 +91,12 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
+
                 //The user picked true.
+                setState(() {
+                  checkAnswer(true);
+                  quizzBrain.nextQuestion(context);
+                });
               },
             ),
           ),
@@ -79,12 +114,18 @@ class _QuizPageState extends State<QuizPage> {
                 ),
               ),
               onPressed: () {
-                //The user picked false.
+                setState(() {
+                  checkAnswer(false);
+                  quizzBrain.nextQuestion(context);
+                });
               },
             ),
           ),
         ),
         //TODO: Add a Row here as your score keeper
+        Row(
+          children: scoreKeeper
+        )
       ],
     );
   }
